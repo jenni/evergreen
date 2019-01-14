@@ -55,6 +55,14 @@ describe('The storage module', () => {
         Storage.removePlugins(['not-found']);
       }).not.toThrow();
     });
+    it('should error out for other than file not-found', async () => {
+      const pluginPath = Storage.pluginsDirectory();
+      mkdirp.sync(pluginPath);
+      fs.mkdirSync(`${pluginPath}/dir`);
+      h.touchFile(`${pluginPath}/dir/somefile`);
+      fs.chmodSync(`${pluginPath}/dir`, 444);
+      expect(Storage.removePlugins(['dir'])).toThrow();
+    });
     it('should remove all files in a list', async () => {
       const filenames = ['first', 'second', 'third', 'fourth'];
       const pluginPath = Storage.pluginsDirectory();
@@ -71,8 +79,8 @@ describe('The storage module', () => {
       });
       await Storage.removePlugins(filenames);
       filenames.forEach((filename) => {
-        expect(h.checkFileExists(`${pluginPath}/${filename}/testfile`)).toBeFalsy();
         expect(h.checkFileExists(`${pluginPath}/${filename}`)).toBeFalsy();
+        expect(h.checkFileExists(`${pluginPath}/${filename}/testfile`)).toBeFalsy();
         expect(h.checkFileExists(`${pluginPath}/${filename}.hpi`)).toBeFalsy();
         expect(h.checkFileExists(`${pluginPath}/${filename}.jpi`)).toBeFalsy();
       });

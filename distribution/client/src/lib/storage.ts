@@ -87,7 +87,14 @@ export default class Storage {
           .then(() => {
             logger.info(`${pluginPath}/${plugin} was deleted.`);
             return true;
-          }).catch(() => logger.debug(`${pluginPath}/${plugin} was not found.`))
+          })
+          .catch((e) => {
+            if (e.code == 'ENOENT') {
+              logger.debug(`${pluginPath}/${plugin} was not found.`);
+            } else {
+              throw e;
+            }
+          })
       );
       retArray.push(
         unlink(`${pluginPath}/${plugin}.hpi`)
@@ -95,7 +102,15 @@ export default class Storage {
             logger.info(`${pluginPath}/${plugin}.hpi was deleted.`);
             UI.publish(`Deleted ${plugin}.hpi`);
             return true;
-          }).catch(() => logger.info(`${pluginPath}/${plugin}.hpi was not found.`))
+          })
+          .catch((e) => {
+            if (e.code == 'ENOENT') {
+              console.log('==============', e)
+              logger.info(`${pluginPath}/${plugin}.hpi was not found.`);
+            } else {
+              throw e;
+            }
+          })
       );
       retArray.push(
         unlink(`${pluginPath}/${plugin}.jpi`)
@@ -103,7 +118,14 @@ export default class Storage {
             logger.info(`${pluginPath}/${plugin}.jpi was deleted.`);
             UI.publish(`Deleted ${plugin}.jpi`);
             return true;
-          }).catch(() => logger.debug(`${pluginPath}/${plugin}.jpi was not found.`))
+          })
+          .catch((e) => {
+            if (e.code == 'ENOENT') {
+              logger.debug(`${pluginPath}/${plugin}.jpi was not found.`);
+            } else {
+              throw e;
+            }
+          })
       );
     });
     return Promise.all(retArray);
